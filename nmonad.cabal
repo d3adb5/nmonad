@@ -1,0 +1,62 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.2.
+--
+-- see: https://github.com/sol/hpack
+
+name:           nmonad
+version:        0.1.0.0
+synopsis:       A desktop notifications daemon
+description:    Please see the README on GitHub at <https://github.com/d3adb5/nmonad#readme>
+category:       System
+homepage:       https://github.com/d3adb5/nmonad#readme
+bug-reports:    https://github.com/d3adb5/nmonad/issues
+author:         d3adb5
+maintainer:     me@d3adb5.net
+copyright:      2023 d3adb5
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/d3adb5/nmonad
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_nmonad
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
+
+executable nmonad
+  main-is: Main.hs
+  other-modules:
+      Paths_nmonad
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , nmonad
+  default-language: Haskell2010
+
+test-suite nmonad-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_nmonad
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , nmonad
+  default-language: Haskell2010

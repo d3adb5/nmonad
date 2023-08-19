@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request: {}
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.stack
+          key: stack-global-${{ hashFiles('stack.yaml') }}
+          restore-keys: stack-global-
+
+      - uses: actions/cache@v3
+        with:
+          path: .stack-work
+          key: stack-work-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}-${{ hashFiles('**/*.hs') }}
+          restore-keys: stack-work-
+
+      - uses: haskell/actions/setup@v2
+        with:
+          stack-version: latest
+          stack-no-global: true
+          enable-stack: true
+
+      - name: Setup GHC through Stack
+        run: stack setup
+
+      - name: Build dependencies
+        run: stack build --only-dependencies
+
+      - name: Build
+        run: stack build
+
+      - name: Test
+        run: stack test

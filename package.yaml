@@ -1,0 +1,53 @@
+name:                nmonad
+version:             0.1.0.0
+github:              "d3adb5/nmonad"
+license:             BSD3
+author:              "d3adb5"
+maintainer:          "me@d3adb5.net"
+copyright:           "2023 d3adb5"
+
+extra-source-files:
+- README.md
+
+synopsis:            A desktop notifications daemon
+category:            System
+description:         Please see the README on GitHub at <https://github.com/d3adb5/nmonad#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+executables:
+  nmonad:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - nmonad
+
+tests:
+  nmonad-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - nmonad
