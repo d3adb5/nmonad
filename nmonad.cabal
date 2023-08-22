@@ -27,6 +27,10 @@ source-repository head
 library
   exposed-modules:
       Lib
+      NMonad
+      NMonad.Core
+      NMonad.DBus
+      NMonad.Main
   other-modules:
       Paths_nmonad
   hs-source-dirs:
@@ -34,6 +38,11 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , containers >=0.6.7 && <1
+    , data-default >=0.7.1.1 && <1
+    , dbus >=1.0.1 && <2
+    , mtl >=2.2 && <3
+    , text ==2.*
   default-language: Haskell2010
 
 executable nmonad
@@ -45,7 +54,12 @@ executable nmonad
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , containers >=0.6.7 && <1
+    , data-default >=0.7.1.1 && <1
+    , dbus >=1.0.1 && <2
+    , mtl >=2.2 && <3
     , nmonad
+    , text ==2.*
   default-language: Haskell2010
 
 test-suite nmonad-test
@@ -58,5 +72,10 @@ test-suite nmonad-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , containers >=0.6.7 && <1
+    , data-default >=0.7.1.1 && <1
+    , dbus >=1.0.1 && <2
+    , mtl >=2.2 && <3
     , nmonad
+    , text ==2.*
   default-language: Haskell2010
