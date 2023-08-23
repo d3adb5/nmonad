@@ -6,10 +6,13 @@ module NMonad.DBus
 import Control.Concurrent
 import Data.Int (Int32)
 import Data.Map (Map)
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import Data.Word (Word32)
 import DBus.Client
 import DBus (Variant)
+
+import Data.Version (showVersion)
+import Paths_nmonad (version)
 
 import NMonad.Core
 
@@ -39,7 +42,7 @@ receiveNotification syncVar dn = do
 
 -- | Server information exposed to DBus as GetServerInformation().
 serverInformation :: IO (Text, Text, Text, Text)
-serverInformation = return ("NMonad", "NMonad", "0.1", "1.2")
+serverInformation = return ("NMonad", "NMonad", pack $ showVersion version, "1.2")
 
 -- | Capability information exposed to DBus as GetCapabilities().
 capabilities :: IO [Text]
