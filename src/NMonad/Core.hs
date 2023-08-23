@@ -1,7 +1,8 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module NMonad.Core
   ( N(..)
-  , NConf(..)
+  , NEnv(..)
+  , NConfig(..)
   , NState(..)
   , Expiration(..)
   , DBusNotification(..)
@@ -27,14 +28,26 @@ import Data.Text (Text)
 import Data.Word
 import DBus (Variant)
 
-newtype N a = N (ReaderT NConf (StateT NState IO) a)
-  deriving (Functor, Applicative, Monad, MonadIO, MonadReader NConf, MonadState NState)
+newtype N a = N (ReaderT NEnv (StateT NState IO) a)
+  deriving (Functor, Applicative, Monad, MonadIO, MonadReader NEnv, MonadState NState)
 
-data NConf = NConf
-  { sleepSeconds :: Int
-  , sleepMessage :: String
-  , dbusMethodCall :: MVar (DBusNotification, MVar Word32)
+-- | Daemon environment, containing daemon configuration and other globally shared read-only data.
+data NEnv = NEnv
+  { globalMailbox :: MVar (DBusNotification, MVar Word32) -- ^ Synchronization MVar for DBus notifications.
+  , configuration :: NConfig                              -- ^ Daemon configuration.
   }
+
+-- | Daemon configuration.
+data NConfig = NConfig
+  { defaultTimeout :: Int      -- ^ Default timeout for notification popups.
+  , disableReplacement :: Bool -- ^ Whether to disable replacing notifications.
+  }
+
+instance Default NConfig where
+  def = NConfig
+    { defaultTimeout = 3
+    , disableReplacement = False
+    }
 
 data NState = NState
   { notificationCount :: Int
@@ -100,5 +113,5 @@ addToNotificationsAndReturnId n = do
   return $ identifier n
 
 -- | Run the 'N' monad.
-runN :: NConf -> NState -> N a -> IO (a, NState)
-runN c s (N n) = runStateT (runReaderT n c) s
+runN :: NEnv -> NState -> N a -> IO (a, NState)
+runN e s (N n) = runStateT (runReaderT n e) s

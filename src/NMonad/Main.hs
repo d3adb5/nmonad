@@ -4,16 +4,15 @@ import Control.Concurrent
 import NMonad.Core
 import NMonad.DBus
 
-nmonad :: IO ()
-nmonad = do
+nmonad :: NConfig -> IO ()
+nmonad cfg = do
   syncVar <- newEmptyMVar
   listenForNotifications syncVar
-  let conf = NConf 60 "Sleeping for 60 seconds..." syncVar
-  _ <- runN conf def mainLoop
+  _ <- runN (NEnv syncVar cfg) def mainLoop
   return ()
 
 mainLoop :: N ()
 mainLoop = forever $ do
-  (dbusNotification, responseVar) <- asks dbusMethodCall >>= liftIO . takeMVar
+  (dbusNotification, responseVar) <- asks globalMailbox >>= liftIO . takeMVar
   notification <- notificationFromDBus dbusNotification
   addToNotificationsAndReturnId notification >>= liftIO . putMVar responseVar
