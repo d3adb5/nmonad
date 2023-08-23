@@ -16,6 +16,7 @@ import Paths_nmonad (version)
 
 import NMonad.Core
 
+-- | Helper function to create an AutoMethod from a function that accepts a 'DBusNotification'.
 withDBusNotification
   :: (DBusNotification -> a) -- ^ Function that accepts a DBusNotification.
   -> Text                    -- ^ Name of the application sending the notification.
@@ -48,6 +49,17 @@ serverInformation = return ("NMonad", "NMonad", pack $ showVersion version, "1.2
 capabilities :: IO [Text]
 capabilities = return ["body", "body-markup", "icon-static"]
 
+-- | Connect to DBus, request the org.freedesktop.Notifications name and export the appropriate interface at
+-- /org/freedesktop/Notifications.
+--
+-- Requires an 'MVar' to for synchronization with the main thread. The 'MVar' is used to pass the notification data
+-- received from DBus to the main thread, as well as a reference to a new 'MVar' that will be populated with the
+-- 'Word32' representing the ID of the sent notification. Refer to the Desktop Notifications Specification for more
+-- information.
+--
+-- This action starts a new thread due to calling 'connectSession', and so it doesn't block the thread that
+-- invoked it.
+--
 listenForNotifications :: MVar (DBusNotification, MVar Word32) -> IO ()
 listenForNotifications syncVar = do
   putStrLn "Connecting to DBus to create client..."

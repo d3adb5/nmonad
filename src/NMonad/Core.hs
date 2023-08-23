@@ -28,6 +28,12 @@ import Data.Text (Text)
 import Data.Word
 import DBus (Variant)
 
+-- | The 'N' monad, 'ReaderT' and 'StateT' transformers over 'IO', encapsulating the daemon's read-only environment and
+-- state, respectively.
+--
+-- State can be retrieved with 'get', while read-only configuration can be retrieved with 'ask'. These are a result of
+-- deriving the 'MonadReader' and 'MonadState' typeclasses.
+--
 newtype N a = N (ReaderT NEnv (StateT NState IO) a)
   deriving (Functor, Applicative, Monad, MonadIO, MonadReader NEnv, MonadState NState)
 
@@ -49,9 +55,10 @@ instance Default NConfig where
     , disableReplacement = False
     }
 
+-- | The mutable state of the daemon.
 data NState = NState
-  { notificationCount :: Int
-  , notifications :: [Notification]
+  { notificationCount :: Int        -- ^ Counter for notification IDs.
+  , notifications :: [Notification] -- ^ List of received notifications.
   } deriving (Show)
 
 instance Default NState where
@@ -70,12 +77,10 @@ fromTimeout n
 --
 -- The desktop notifications specification can be found in the following URL:
 --   https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html
+--
 data DBusNotification = DBusNotification Text Word32 Text Text Text [Text] (Map Text Variant) Int32
 
 -- | A notification sent by some application and processed by NMonad.
---
--- The desktop notifications specification can be found in the following URL:
---   https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html
 data Notification = Notification
   { applicationName :: Text   -- ^ Name of the application sending the notification.
   , applicationIcon :: Text   -- ^ Icon for the application sending the notification.
@@ -83,7 +88,7 @@ data Notification = Notification
   , body :: Text              -- ^ The optional detailed body text.
   , identifier :: Word32      -- ^ Unsigned integer ID for the notification.
   , actions :: [Text]         -- ^ A list of actions (buttons) associated with the notification.
-  , hints :: Map Text Variant -- ^ A dictionary of extra data to pass along with the notification.
+  , hints :: Map Text Variant -- ^ A dictionary of hints passed along with the notification.
   , timeout :: Expiration     -- ^ When the notification should expire.
   } deriving (Show)
 
