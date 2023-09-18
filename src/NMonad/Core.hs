@@ -114,7 +114,6 @@ notificationFromDBus (DBusNotification appName replacesId appIcon summ bod acts 
 addToNotificationsAndReturnId :: Notification -> N Word32
 addToNotificationsAndReturnId n = do
   modify $ \s -> s { notifications = n : notifications s }
-  get >>= liftIO . print
   return $ identifier n
 
 -- | Run the 'N' monad.
