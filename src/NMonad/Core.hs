@@ -98,8 +98,8 @@ instance Default Notification where
 -- | Produces a Notification given the data provided by DBus.
 notificationFromDBus :: DBusNotification -> N Notification
 notificationFromDBus (DBusNotification appName replacesId appIcon summ bod acts hnts tout) = do
-  newNotificationId <- gets notificationCount
-  when (replacesId == 0) $ modify $ \s -> s { notificationCount = newNotificationId + 1 }
+  newNotificationId <- gets $ (+1) . notificationCount
+  when (replacesId == 0) $ modify $ \s -> s { notificationCount = newNotificationId }
   return def
     { applicationName = appName
     , identifier = if replacesId == 0 then fromIntegral newNotificationId else replacesId
