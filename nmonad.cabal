@@ -65,15 +65,18 @@ test-suite nmonad-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Test.NMonad
       Paths_nmonad
   hs-source-dirs:
       test
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -Wno-orphans -Wno-missing-export-lists
   build-depends:
-      base >=4.7 && <5
+      QuickCheck ==2.*
+    , base >=4.7 && <5
     , containers >=0.6.7 && <1
     , data-default >=0.7.1.1 && <1
     , dbus >=1.0.1 && <2
+    , hspec ==2.*
     , mtl >=2.2 && <3
     , nmonad
     , text ==2.*
