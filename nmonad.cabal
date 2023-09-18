@@ -65,6 +65,7 @@ test-suite nmonad-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      NMonad.CoreSpec
       Test.NMonad
       Paths_nmonad
   hs-source-dirs:
