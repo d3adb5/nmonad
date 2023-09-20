@@ -32,6 +32,9 @@ ghc-options:
 - -Wpartial-fields
 - -Wredundant-constraints
 
+data-dir: resources
+data-files: dbus-daemon/*
+
 library:
   source-dirs: src
 
@@ -60,3 +63,4 @@ tests:
     - QuickCheck == 2.*
     - hspec == 2.*
     - nmonad
+    - testcontainers >= 0.5.0.0

@@ -2,3 +2,6 @@ resolver: lts-21.12
 
 packages:
 - .
+
+extra-deps:
+  - testcontainers-0.5.0.0

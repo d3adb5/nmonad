@@ -19,6 +19,11 @@ license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
+data-files:
+    dbus-daemon/dbus.conf
+    dbus-daemon/Dockerfile
+    dbus-daemon/entrypoint.sh
+data-dir:       resources
 
 source-repository head
   type: git
@@ -66,6 +71,7 @@ test-suite nmonad-test
   main-is: Spec.hs
   other-modules:
       NMonad.CoreSpec
+      NMonad.DBusSpec
       Test.NMonad
       Paths_nmonad
   hs-source-dirs:
@@ -80,5 +86,6 @@ test-suite nmonad-test
     , hspec ==2.*
     , mtl >=2.2 && <3
     , nmonad
+    , testcontainers >=0.5.0.0
     , text ==2.*
   default-language: Haskell2010
