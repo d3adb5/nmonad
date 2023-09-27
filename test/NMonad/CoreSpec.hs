@@ -10,8 +10,6 @@ import Test.NMonad
 import NMonad.Core
 
 deriving instance Show DBusNotification
-deriving instance Eq Expiration
-deriving instance Eq Notification
 
 spec :: Spec
 spec = do

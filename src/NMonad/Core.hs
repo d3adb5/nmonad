@@ -65,7 +65,7 @@ instance Default NState where
   def = NState 0 []
 
 -- | Helper data type to represent when a given notification should expire.
-data Expiration = ServerDefault | Never | Milliseconds Int32 deriving (Show)
+data Expiration = ServerDefault | Never | Milliseconds Int32 deriving (Show, Eq)
 
 fromTimeout :: Int32 -> Expiration
 fromTimeout n
@@ -90,7 +90,7 @@ data Notification = Notification
   , actions :: [Text]         -- ^ A list of actions (buttons) associated with the notification.
   , hints :: Map Text Variant -- ^ A dictionary of hints passed along with the notification.
   , timeout :: Expiration     -- ^ When the notification should expire.
-  } deriving (Show)
+  } deriving (Show, Eq)
 
 instance Default Notification where
   def = Notification mempty mempty mempty mempty 0 mempty mempty ServerDefault
