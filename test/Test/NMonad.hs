@@ -3,7 +3,7 @@
 module Test.NMonad where
 
 import Control.Concurrent (newEmptyMVar)
-import Data.Map (empty)
+import Data.Map (empty, fromList)
 import Data.Text (pack, Text)
 import System.IO.Unsafe (unsafePerformIO)
 
@@ -28,8 +28,8 @@ instance Arbitrary NConfig where
 
 instance Arbitrary NState where
   arbitrary = do
-    notificationCount <- getSize
-    notifications <- arbitrary
+    notifications <- fromList . map (\n -> (identifier n, n)) <$> arbitrary
+    let notificationCount = fromIntegral $ length notifications
     return NState {..}
 
 instance Arbitrary Notification where

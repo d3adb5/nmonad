@@ -23,7 +23,7 @@ import Control.Monad.State
 
 import Data.Default
 import Data.Int (Int32)
-import Data.Map (Map)
+import Data.Map (Map, insert)
 import Data.Text (Text)
 import Data.Word
 import DBus (Variant)
@@ -57,12 +57,12 @@ instance Default NConfig where
 
 -- | The mutable state of the daemon.
 data NState = NState
-  { notificationCount :: Int        -- ^ Counter for notification IDs.
-  , notifications :: [Notification] -- ^ List of received notifications.
-  } deriving (Show)
+  { notificationCount :: Word32              -- ^ Counter for notification IDs.
+  , notifications :: Map Word32 Notification -- ^ Notifications indexed by ID.
+  } deriving (Show, Eq)
 
 instance Default NState where
-  def = NState 0 []
+  def = NState 0 mempty
 
 -- | Helper data type to represent when a given notification should expire.
 data Expiration = ServerDefault | Never | Milliseconds Int32 deriving (Show, Eq)
@@ -102,7 +102,7 @@ notificationFromDBus (DBusNotification appName replacesId appIcon summ bod acts 
   when (replacesId == 0) $ modify $ \s -> s { notificationCount = newNotificationId }
   return def
     { applicationName = appName
-    , identifier = if replacesId == 0 then fromIntegral newNotificationId else replacesId
+    , identifier = if replacesId == 0 then newNotificationId else replacesId
     , applicationIcon = appIcon
     , summary = summ
     , body = bod
@@ -113,7 +113,7 @@ notificationFromDBus (DBusNotification appName replacesId appIcon summ bod acts 
 
 addToNotificationsAndReturnId :: Notification -> N Word32
 addToNotificationsAndReturnId n = do
-  modify $ \s -> s { notifications = n : notifications s }
+  modify $ \s -> s { notifications = insert (identifier n) n (notifications s) }
   return $ identifier n
 
 -- | Run the 'N' monad.
