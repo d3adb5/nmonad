@@ -31,6 +31,7 @@ library
       NMonad.DBus
       NMonad.Lenses
       NMonad.Main
+      NMonad.Operations
   other-modules:
       Paths_nmonad
   hs-source-dirs:
@@ -69,6 +70,7 @@ test-suite nmonad-test
   main-is: Spec.hs
   other-modules:
       NMonad.CoreSpec
+      NMonad.OperationsSpec
       Test.NMonad
       Paths_nmonad
   hs-source-dirs:

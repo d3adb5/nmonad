@@ -54,8 +54,11 @@ instance Arbitrary DBusNotification where
 
 -- | Run an action in the 'N' monad with a generated initial environment and state.
 runGenN :: N a -> IO (a, NState, (NEnv, NState))
-runGenN action = do
+runGenN action = generate arbitrary >>= flip runGenN' action
+
+-- | Run an action in the 'N' monad with a generated initial environment and given initial state.
+runGenN' :: NState -> N a -> IO (a, NState, (NEnv, NState))
+runGenN' st action = do
   initialEnvironment <- generate arbitrary
-  initialState <- generate arbitrary
-  (wrapped, finalState) <- runN initialEnvironment initialState action
-  return (wrapped, finalState, (initialEnvironment, initialState))
+  (wrapped, finalState) <- runN initialEnvironment st action
+  return (wrapped, finalState, (initialEnvironment, st))
