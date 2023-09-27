@@ -21,13 +21,12 @@ import NMonad.Core (NState)
 import NMonad.Lenses
 
 nonEmptyState :: Gen NState
-nonEmptyState = arbitrary `suchThat` ((/= empty) . view notifications)
+nonEmptyState = arbitrary >>= \ notif ->
+  over notifications (insert (view identifier notif) notif) <$> arbitrary
 
 stateAndAbsentId :: Gen (NState, Word32)
-stateAndAbsentId = do
-  generatedState <- arbitrary
-  absentId <- arbitrary `suchThat` flip notMember (view notifications generatedState)
-  return (generatedState, absentId)
+stateAndAbsentId = arbitrary >>= \ st ->
+  return (st, (+1) . maximum . (0:) . keys $ view notifications st)
 
 spec :: Spec
 spec = do
