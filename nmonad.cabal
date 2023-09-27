@@ -29,6 +29,7 @@ library
       NMonad
       NMonad.Core
       NMonad.DBus
+      NMonad.Lenses
       NMonad.Main
   other-modules:
       Paths_nmonad
@@ -40,6 +41,7 @@ library
     , containers >=0.6.7 && <1
     , data-default >=0.7.1.1 && <1
     , dbus >=1.0.1 && <2
+    , lens ==5.*
     , mtl >=2.2 && <3
     , text ==2.*
   default-language: Haskell2010
@@ -56,6 +58,7 @@ executable nmonad
     , containers >=0.6.7 && <1
     , data-default >=0.7.1.1 && <1
     , dbus >=1.0.1 && <2
+    , lens ==5.*
     , mtl >=2.2 && <3
     , nmonad
     , text ==2.*
@@ -78,6 +81,7 @@ test-suite nmonad-test
     , data-default >=0.7.1.1 && <1
     , dbus >=1.0.1 && <2
     , hspec ==2.*
+    , lens ==5.*
     , mtl >=2.2 && <3
     , nmonad
     , text ==2.*
