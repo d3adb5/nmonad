@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Lib
+import NMonad
 
 main :: IO ()
-main = someFunc
+main = nmonad def

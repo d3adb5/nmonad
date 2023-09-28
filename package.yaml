@@ -15,6 +15,11 @@ description:         Please see the README on GitHub at <https://github.com/d3ad
 
 dependencies:
 - base >= 4.7 && < 5
+- containers >= 0.6.7 && < 1
+- data-default >= 0.7.1.1 && < 1
+- dbus >= 1.0.1 && < 2
+- mtl >= 2.2 && < 3
+- text == 2.*
 
 ghc-options:
 - -Wall
@@ -49,5 +54,9 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -Wno-orphans
+    - -Wno-missing-export-lists
     dependencies:
+    - QuickCheck == 2.*
+    - hspec == 2.*
     - nmonad
