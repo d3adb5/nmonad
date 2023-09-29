@@ -9,13 +9,13 @@ import Test.Hspec.QuickCheck
 import Test.NMonad
 import Test.QuickCheck
 
-import Control.Lens (over, view)
+import Control.Lens (over, view, set)
 
 import Data.Map
 import Data.Word (Word32)
 
 import NMonad.Operations
-import NMonad.Core (NState)
+import NMonad.Core (NState, DBusNotification(..))
 import NMonad.Lenses
 
 nonEmptyState :: Gen NState
@@ -26,8 +26,25 @@ stateAndAbsentId :: Gen (NState, Word32)
 stateAndAbsentId = arbitrary >>= \ st ->
   return (st, (+1) . maximum . (0:) . keys $ view notifications st)
 
+newDBusNotification :: Gen DBusNotification
+newDBusNotification = set replacesId 0 <$> arbitrary
+
+replacingDBusNotification :: Gen DBusNotification
+replacingDBusNotification = over replacesId (+1) <$> arbitrary
+
 spec :: Spec
 spec = do
+  describe "makeNotification :: DBusNotification -> N Notification" $ do
+    prop "respects replacesId if set to something other than 0" . forAll replacingDBusNotification $ \dn -> do
+      (notification, finalState, (_, initialState)) <- runGenN $ makeNotification dn
+      view identifier notification `shouldBe` view replacesId dn
+      finalState `shouldBe` initialState
+
+    prop "generates some notification id when replacesId is 0" . forAll newDBusNotification $ \dn -> do
+      (notification, finalState, (_, initialState)) <- runGenN $ makeNotification dn
+      view identifier notification `shouldNotBe` 0
+      finalState `shouldBe` initialState
+
   describe "indexNotification :: Notification -> N Word32" $ do
     prop "adds a notification to internal state" $ \notif -> do
       (returnedId, finalState, (_, initialState)) <- runGenN $ indexNotification notif

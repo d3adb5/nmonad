@@ -8,8 +8,7 @@ module NMonad.Core
   , DBusNotification(..)
   , Notification(..)
 
-  , notificationFromDBus
-  , addToNotificationsAndReturnId
+  , fromTimeout
   , runN
 
   , module Control.Monad.Reader
@@ -23,7 +22,7 @@ import Control.Monad.State
 
 import Data.Default
 import Data.Int (Int32)
-import Data.Map (Map, insert)
+import Data.Map (Map)
 import Data.Text (Text)
 import Data.Word
 import DBus (Variant)
@@ -79,6 +78,7 @@ fromTimeout n
 --   https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html
 --
 data DBusNotification = DBusNotification Text Word32 Text Text Text [Text] (Map Text Variant) Int32
+  deriving (Show, Eq)
 
 -- | A notification sent by some application and processed by NMonad.
 data Notification = Notification
@@ -94,27 +94,6 @@ data Notification = Notification
 
 instance Default Notification where
   def = Notification mempty mempty mempty mempty 0 mempty mempty ServerDefault
-
--- | Produces a Notification given the data provided by DBus.
-notificationFromDBus :: DBusNotification -> N Notification
-notificationFromDBus (DBusNotification appName replacesId appIcon summ bod acts hnts tout) = do
-  newNotificationId <- gets $ (+1) . notificationCount
-  when (replacesId == 0) $ modify $ \s -> s { notificationCount = newNotificationId }
-  return def
-    { applicationName = appName
-    , identifier = if replacesId == 0 then newNotificationId else replacesId
-    , applicationIcon = appIcon
-    , summary = summ
-    , body = bod
-    , actions = acts
-    , hints = hnts
-    , timeout = fromTimeout tout
-    }
-
-addToNotificationsAndReturnId :: Notification -> N Word32
-addToNotificationsAndReturnId n = do
-  modify $ \s -> s { notifications = insert (identifier n) n (notifications s) }
-  return $ identifier n
 
 -- | Run the 'N' monad.
 runN :: NEnv -> NState -> N a -> IO (a, NState)

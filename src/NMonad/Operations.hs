@@ -16,6 +16,7 @@ module NMonad.Operations
   , replaceNotification
   , updateNotification
   , generateNotificationId
+  , makeNotification
   ) where
 
 import Prelude hiding (lookup)
@@ -23,11 +24,28 @@ import Prelude hiding (lookup)
 import Control.Lens (over, view)
 import Control.Monad.State (modify, gets)
 
+import Data.Default (def)
 import Data.Map (insert, lookup, adjust, delete)
 import Data.Word (Word32)
 
-import NMonad.Core (N(..), Notification)
+import qualified NMonad.Core as Core
+import NMonad.Core (N(..), DBusNotification(..), Notification, fromTimeout)
 import NMonad.Lenses
+
+-- | Produce a new 'Notification' from a 'DBusNotification'.
+makeNotification :: DBusNotification -> N Notification
+makeNotification (DBusNotification appName rId appIcon summ bod acts hnts tout) = do
+  notificationId <- (if rId == 0 then id else const rId) <$> generateNotificationId
+  return def
+    { Core.applicationName = appName
+    , Core.identifier = notificationId
+    , Core.applicationIcon = appIcon
+    , Core.summary = summ
+    , Core.body = bod
+    , Core.actions = acts
+    , Core.hints = hnts
+    , Core.timeout = fromTimeout tout
+    }
 
 -- | Adds a given 'Notification' to internal state. Its ID is returned for convenience.
 indexNotification :: Notification -> N Word32

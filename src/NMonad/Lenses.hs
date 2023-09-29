@@ -26,6 +26,9 @@ module NMonad.Lenses
   , actions
   , hints
   , timeout
+
+    -- DBusNotification
+  , replacesId
   ) where
 
 import Control.Lens (Lens', lens)
@@ -66,3 +69,8 @@ hints = lens Core.hints (\n hs -> n { Core.hints = hs })
 
 timeout :: Lens' Core.Notification Core.Expiration
 timeout = lens Core.timeout (\n t -> n { Core.timeout = t })
+
+replacesId :: Lens' Core.DBusNotification Word32
+replacesId = lens getter setter
+  where getter (Core.DBusNotification _ i _ _ _ _ _ _) = i
+        setter (Core.DBusNotification a _ b c d e f g) ni = Core.DBusNotification a ni b c d e f g
