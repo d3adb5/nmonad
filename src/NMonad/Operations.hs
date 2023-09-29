@@ -38,7 +38,7 @@ indexNotification n = do
 
 -- | Generates a new notification ID given knowledge of internal state. If unused, the ID may be reissued.
 generateNotificationId :: N Word32
-generateNotificationId = gets $ view notificationCount
+generateNotificationId = gets $ (+1) . view notificationCount
 
 -- | Removes a notification from internal state. The removed notification, if found, is returned.
 removeNotification :: Word32 -> N (Maybe Notification)
