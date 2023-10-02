@@ -22,20 +22,20 @@ module NMonad.Operations
 import Prelude hiding (lookup)
 
 import Control.Lens (over, view)
-import Control.Monad.State (modify, gets)
 
-import Data.Default (def)
+import Data.Bool.HT (if')
 import Data.Map (insert, lookup, adjust, delete)
 import Data.Word (Word32)
 
 import qualified NMonad.Core as Core
-import NMonad.Core (N(..), DBusNotification(..), Notification, fromTimeout)
+import NMonad.Core hiding (notifications, notificationCount, identifier)
 import NMonad.Lenses
 
 -- | Produce a new 'Notification' from a 'DBusNotification'.
 makeNotification :: DBusNotification -> N Notification
 makeNotification (DBusNotification appName rId appIcon summ bod acts hnts tout) = do
-  notificationId <- (if rId == 0 then id else const rId) <$> generateNotificationId
+  replacesIfNecessary <- asks (if' . (&& rId == 0) . not . disableReplacement . configuration)
+  notificationId <- replacesIfNecessary <$> generateNotificationId <*> pure rId
   return def
     { Core.applicationName = appName
     , Core.identifier = notificationId

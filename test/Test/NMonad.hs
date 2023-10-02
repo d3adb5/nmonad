@@ -20,10 +20,11 @@ instance Arbitrary a => Arbitrary (N a) where
 instance Arbitrary NEnv where
   arbitrary = NEnv (unsafePerformIO newEmptyMVar) <$> arbitrary
 
+-- | This instance of 'Arbitrary' always generates nmonad configuration that enable notification replacement.
 instance Arbitrary NConfig where
   arbitrary = do
     defaultTimeout <- arbitrary
-    disableReplacement <- arbitrary
+    let disableReplacement = False
     return NConfig {..}
 
 instance Arbitrary NState where
