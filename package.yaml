@@ -35,6 +35,7 @@ library:
   dependencies:
   - data-default >= 0.7.1.1 && < 1
   - dbus >= 1.0.1 && < 2
+  - extra == 1.*
   - mtl >= 2.2 && < 3
   - utility-ht >= 0.0.17
 

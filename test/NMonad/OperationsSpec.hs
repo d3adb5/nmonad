@@ -12,10 +12,11 @@ import Test.QuickCheck
 import Control.Lens (over, view, set)
 
 import Data.Map
+import Data.Maybe (fromJust)
 import Data.Word (Word32)
 
 import NMonad.Operations
-import NMonad.Core (NState, DBusNotification(..))
+import NMonad.Core (NState, DBusNotification(..), runN)
 import NMonad.Lenses
 
 nonEmptyState :: Gen NState
@@ -44,6 +45,28 @@ spec = do
       (notification, finalState, (_, initialState)) <- runGenN $ makeNotification dn
       view identifier notification `shouldNotBe` 0
       finalState `shouldBe` initialState
+
+  describe "processNotification :: DBusNotification -> N (Maybe Notification)" $ do
+    prop "yields nothing when notification is discarded in dbus hook" $ \dn -> do
+      generatedEnv <- set (configuration . dbusNotificationHook) (const $ return Nothing) <$> generate arbitrary
+      (processedNotification, _) <- generate arbitrary >>= flip (runN generatedEnv) (processNotification dn)
+      processedNotification `shouldBe` Nothing
+
+    prop "applies dbus notification hook" $ \dn -> do
+      updateReplacesId <- (Just .) . set replacesId <$> generate arbitrary
+      generatedEnv <- set (configuration . dbusNotificationHook) (return . updateReplacesId) <$> generate arbitrary
+      generatedState <- generate arbitrary
+      (expectedNotification, _) <- runN generatedEnv generatedState . makeNotification . fromJust $ updateReplacesId dn
+      (processedNotification, _) <- runN generatedEnv generatedState $ processNotification dn
+      processedNotification `shouldBe` Just expectedNotification
+
+    prop "applies regular notification hook" $ \dn -> do
+      updateSummary <- (Just .) . over summary . (<>) <$> generate arbitrary
+      generatedEnv <- set (configuration . notificationHook) (return . updateSummary) <$> generate arbitrary
+      generatedState <- generate arbitrary
+      (expectedMaybeNotification, _) <- runN generatedEnv generatedState $ updateSummary <$> makeNotification dn
+      (processedNotification, _) <- runN generatedEnv generatedState $ processNotification dn
+      processedNotification `shouldBe` expectedMaybeNotification
 
   describe "indexNotification :: Notification -> N Word32" $ do
     prop "adds a notification to internal state" $ \notif -> do

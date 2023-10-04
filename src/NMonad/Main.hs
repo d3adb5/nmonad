@@ -1,6 +1,7 @@
 module NMonad.Main (nmonad) where
 
 import Control.Concurrent
+import Control.Monad.Extra (whenJustM)
 import NMonad.Core
 import NMonad.DBus
 import NMonad.Operations
@@ -15,5 +16,4 @@ nmonad cfg = do
 mainLoop :: N ()
 mainLoop = forever $ do
   (dbusNotification, responseVar) <- asks globalMailbox >>= liftIO . takeMVar
-  notification <- makeNotification dbusNotification
-  indexNotification notification >>= liftIO . putMVar responseVar
+  whenJustM (processNotification dbusNotification) $ indexNotification >=> liftIO . putMVar responseVar

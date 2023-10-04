@@ -17,6 +17,14 @@ module NMonad.Lenses
     notifications
   , notificationCount
 
+    -- NEnv
+  , configuration
+
+    -- NConfig
+  , dbusNotificationHook
+  , notificationHook
+  , disableReplacement
+
     -- Notification
   , applicationName
   , applicationIcon
@@ -45,6 +53,18 @@ notifications = lens Core.notifications (\s a -> s { Core.notifications = a })
 
 notificationCount :: Lens' Core.NState Word32
 notificationCount = lens Core.notificationCount (\s a -> s { Core.notificationCount = a })
+
+configuration :: Lens' Core.NEnv Core.NConfig
+configuration = lens Core.configuration (\e c -> e { Core.configuration = c })
+
+dbusNotificationHook :: Lens' Core.NConfig (Core.DBusNotification -> Core.N (Maybe Core.DBusNotification))
+dbusNotificationHook = lens Core.dbusNotificationHook (\c h -> c { Core.dbusNotificationHook = h })
+
+notificationHook :: Lens' Core.NConfig (Core.Notification -> Core.N (Maybe Core.Notification))
+notificationHook = lens Core.notificationHook (\c h -> c { Core.notificationHook = h })
+
+disableReplacement :: Lens' Core.NConfig Bool
+disableReplacement = lens Core.disableReplacement (\c dr -> c { Core.disableReplacement = dr })
 
 applicationName :: Lens' Core.Notification Text
 applicationName = lens Core.applicationName (\n an -> n { Core.applicationName = an })

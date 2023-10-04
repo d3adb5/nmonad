@@ -46,12 +46,19 @@ data NEnv = NEnv
 data NConfig = NConfig
   { defaultTimeout :: Int      -- ^ Default timeout for notification popups.
   , disableReplacement :: Bool -- ^ Whether to disable replacing notifications.
+
+  , dbusNotificationHook :: DBusNotification -> N (Maybe DBusNotification)
+    -- ^ Process notifications as soon as they are received from DBus, optionally discarding it.
+  , notificationHook :: Notification -> N (Maybe Notification)
+    -- ^ Process notifications after processed by nmonad, optionally discarding it.
   }
 
 instance Default NConfig where
   def = NConfig
     { defaultTimeout = 3
     , disableReplacement = False
+    , dbusNotificationHook = return . Just
+    , notificationHook = return . Just
     }
 
 -- | The mutable state of the daemon.

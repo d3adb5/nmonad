@@ -25,6 +25,8 @@ instance Arbitrary NConfig where
   arbitrary = do
     defaultTimeout <- arbitrary
     let disableReplacement = False
+        dbusNotificationHook = return . Just
+        notificationHook = return . Just
     return NConfig {..}
 
 instance Arbitrary NState where
