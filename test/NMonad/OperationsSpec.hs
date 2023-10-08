@@ -9,15 +9,12 @@ import Test.Hspec.QuickCheck
 import Test.NMonad
 import Test.QuickCheck
 
-import Control.Lens (over, view, set)
-
 import Data.Map
 import Data.Maybe (fromJust)
 import Data.Word (Word32)
 
 import NMonad.Operations
-import NMonad.Core (NState, DBusNotification(..), runN)
-import NMonad.Lenses
+import NMonad.Core
 
 nonEmptyState :: Gen NState
 nonEmptyState = arbitrary >>= \ notif ->
