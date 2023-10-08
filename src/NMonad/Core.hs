@@ -1,6 +1,21 @@
+------------------------------------------------------------------------------------------------------------------------
+-- |
+-- Module      : NMonad.Core
+-- Description : Core NMonad types and functions
+-- Copyright   : (c) d3adb5 2023
+-- License     : BSD3
+-- Maintainer  : d3adb5 <me@d3adb5.net>
+-- Stability   : experimental
+--
+-- This module defines the core types and functions used by NMonad, most important of which would be the 'N' monad
+-- itself, alongside accompanying instances of 'MonadReader' and 'MonadState'. Lenses are exported by this module, and
+-- symbols from 'Control.Lens', among others, are re-exported for convenience.
+------------------------------------------------------------------------------------------------------------------------
+
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE NoFieldSelectors #-}
 {-# LANGUAGE TemplateHaskell #-}
+
 module NMonad.Core
   ( N(..)
   , NEnv(..)
