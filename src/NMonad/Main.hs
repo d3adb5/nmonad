@@ -1,3 +1,15 @@
+------------------------------------------------------------------------------------------------------------------------
+-- |
+-- Module      : NMonad.Main
+-- Description : NMonad's main loop and entrypoint
+-- Copyright   : (c) d3adb5 2023
+-- License     : BSD3
+-- Maintainer  : d3adb5 <me@d3adb5.net>
+-- Stability   : experimental
+--
+-- This module contains the main entrypoint and main loop for NMonad.
+------------------------------------------------------------------------------------------------------------------------
+
 module NMonad.Main (nmonad) where
 
 import Control.Concurrent
