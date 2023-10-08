@@ -15,5 +15,5 @@ nmonad cfg = do
 
 mainLoop :: N ()
 mainLoop = forever $ do
-  (dbusNotification, responseVar) <- asks globalMailbox >>= liftIO . takeMVar
+  (dbusNotification, responseVar) <- asks (view globalMailbox) >>= liftIO . takeMVar
   whenJustM (processNotification dbusNotification) $ indexNotification >=> liftIO . putMVar responseVar

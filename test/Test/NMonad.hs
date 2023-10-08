@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-name-shadowing #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Test.NMonad where
@@ -9,7 +10,7 @@ import System.IO.Unsafe (unsafePerformIO)
 
 import Test.QuickCheck
 
-import NMonad.Core
+import NMonad.Core hiding (elements)
 
 instance Arbitrary Text where
   arbitrary = fmap pack arbitrary
@@ -31,7 +32,7 @@ instance Arbitrary NConfig where
 
 instance Arbitrary NState where
   arbitrary = do
-    notifications <- fromList . map (\n -> (identifier n, n)) <$> arbitrary
+    notifications <- fromList . map (\n -> (view identifier n, n)) <$> arbitrary
     let notificationCount = fromIntegral $ length notifications
     return NState {..}
 

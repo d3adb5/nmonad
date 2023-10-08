@@ -29,7 +29,6 @@ library
       NMonad
       NMonad.Core
       NMonad.DBus
-      NMonad.Lenses
       NMonad.Internal.TH
       NMonad.Main
       NMonad.Operations
