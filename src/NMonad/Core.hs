@@ -48,9 +48,9 @@ data NConfig = NConfig
   , disableReplacement :: Bool -- ^ Whether to disable replacing notifications.
 
   , dbusNotificationHook :: DBusNotification -> N (Maybe DBusNotification)
-    -- ^ Process notifications as soon as they are received from DBus, optionally discarding it.
+    -- ^ Process a notification as soon as it is received from DBus, optionally discarding it.
   , notificationHook :: Notification -> N (Maybe Notification)
-    -- ^ Process notifications after processed by nmonad, optionally discarding it.
+    -- ^ Process a notification after it is processed by nmonad, optionally discarding it.
   }
 
 instance Default NConfig where
