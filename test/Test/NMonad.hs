@@ -3,7 +3,7 @@
 module Test.NMonad where
 
 import Control.Concurrent (newEmptyMVar)
-import Data.Map (empty)
+import Data.Map (empty, fromList)
 import Data.Text (pack, Text)
 import System.IO.Unsafe (unsafePerformIO)
 
@@ -20,16 +20,19 @@ instance Arbitrary a => Arbitrary (N a) where
 instance Arbitrary NEnv where
   arbitrary = NEnv (unsafePerformIO newEmptyMVar) <$> arbitrary
 
+-- | This instance of 'Arbitrary' always generates nmonad configuration that enable notification replacement.
 instance Arbitrary NConfig where
   arbitrary = do
     defaultTimeout <- arbitrary
-    disableReplacement <- arbitrary
+    let disableReplacement = False
+        dbusNotificationHook = return . Just
+        notificationHook = return . Just
     return NConfig {..}
 
 instance Arbitrary NState where
   arbitrary = do
-    notificationCount <- getSize
-    notifications <- arbitrary
+    notifications <- fromList . map (\n -> (identifier n, n)) <$> arbitrary
+    let notificationCount = fromIntegral $ length notifications
     return NState {..}
 
 instance Arbitrary Notification where
@@ -54,8 +57,11 @@ instance Arbitrary DBusNotification where
 
 -- | Run an action in the 'N' monad with a generated initial environment and state.
 runGenN :: N a -> IO (a, NState, (NEnv, NState))
-runGenN action = do
+runGenN action = generate arbitrary >>= flip runGenN' action
+
+-- | Run an action in the 'N' monad with a generated initial environment and given initial state.
+runGenN' :: NState -> N a -> IO (a, NState, (NEnv, NState))
+runGenN' st action = do
   initialEnvironment <- generate arbitrary
-  initialState <- generate arbitrary
-  (wrapped, finalState) <- runN initialEnvironment initialState action
-  return (wrapped, finalState, (initialEnvironment, initialState))
+  (wrapped, finalState) <- runN initialEnvironment st action
+  return (wrapped, finalState, (initialEnvironment, st))

@@ -8,8 +8,7 @@ module NMonad.Core
   , DBusNotification(..)
   , Notification(..)
 
-  , notificationFromDBus
-  , addToNotificationsAndReturnId
+  , fromTimeout
   , runN
 
   , module Control.Monad.Reader
@@ -47,25 +46,32 @@ data NEnv = NEnv
 data NConfig = NConfig
   { defaultTimeout :: Int      -- ^ Default timeout for notification popups.
   , disableReplacement :: Bool -- ^ Whether to disable replacing notifications.
+
+  , dbusNotificationHook :: DBusNotification -> N (Maybe DBusNotification)
+    -- ^ Process a notification as soon as it is received from DBus, optionally discarding it.
+  , notificationHook :: Notification -> N (Maybe Notification)
+    -- ^ Process a notification after it is processed by nmonad, optionally discarding it.
   }
 
 instance Default NConfig where
   def = NConfig
     { defaultTimeout = 3
     , disableReplacement = False
+    , dbusNotificationHook = return . Just
+    , notificationHook = return . Just
     }
 
 -- | The mutable state of the daemon.
 data NState = NState
-  { notificationCount :: Int        -- ^ Counter for notification IDs.
-  , notifications :: [Notification] -- ^ List of received notifications.
-  } deriving (Show)
+  { notificationCount :: Word32              -- ^ Counter for notification IDs.
+  , notifications :: Map Word32 Notification -- ^ Notifications indexed by ID.
+  } deriving (Show, Eq)
 
 instance Default NState where
-  def = NState 0 []
+  def = NState 0 mempty
 
 -- | Helper data type to represent when a given notification should expire.
-data Expiration = ServerDefault | Never | Milliseconds Int32 deriving (Show)
+data Expiration = ServerDefault | Never | Milliseconds Int32 deriving (Show, Eq)
 
 fromTimeout :: Int32 -> Expiration
 fromTimeout n
@@ -79,6 +85,7 @@ fromTimeout n
 --   https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html
 --
 data DBusNotification = DBusNotification Text Word32 Text Text Text [Text] (Map Text Variant) Int32
+  deriving (Show, Eq)
 
 -- | A notification sent by some application and processed by NMonad.
 data Notification = Notification
@@ -90,31 +97,10 @@ data Notification = Notification
   , actions :: [Text]         -- ^ A list of actions (buttons) associated with the notification.
   , hints :: Map Text Variant -- ^ A dictionary of hints passed along with the notification.
   , timeout :: Expiration     -- ^ When the notification should expire.
-  } deriving (Show)
+  } deriving (Show, Eq)
 
 instance Default Notification where
   def = Notification mempty mempty mempty mempty 0 mempty mempty ServerDefault
-
--- | Produces a Notification given the data provided by DBus.
-notificationFromDBus :: DBusNotification -> N Notification
-notificationFromDBus (DBusNotification appName replacesId appIcon summ bod acts hnts tout) = do
-  newNotificationId <- gets $ (+1) . notificationCount
-  when (replacesId == 0) $ modify $ \s -> s { notificationCount = newNotificationId }
-  return def
-    { applicationName = appName
-    , identifier = if replacesId == 0 then fromIntegral newNotificationId else replacesId
-    , applicationIcon = appIcon
-    , summary = summ
-    , body = bod
-    , actions = acts
-    , hints = hnts
-    , timeout = fromTimeout tout
-    }
-
-addToNotificationsAndReturnId :: Notification -> N Word32
-addToNotificationsAndReturnId n = do
-  modify $ \s -> s { notifications = n : notifications s }
-  return $ identifier n
 
 -- | Run the 'N' monad.
 runN :: NEnv -> NState -> N a -> IO (a, NState)

@@ -29,7 +29,9 @@ library
       NMonad
       NMonad.Core
       NMonad.DBus
+      NMonad.Lenses
       NMonad.Main
+      NMonad.Operations
   other-modules:
       Paths_nmonad
   hs-source-dirs:
@@ -40,8 +42,11 @@ library
     , containers >=0.6.7 && <1
     , data-default >=0.7.1.1 && <1
     , dbus >=1.0.1 && <2
+    , extra ==1.*
+    , lens ==5.*
     , mtl >=2.2 && <3
     , text ==2.*
+    , utility-ht >=0.0.17
   default-language: Haskell2010
 
 executable nmonad
@@ -54,9 +59,7 @@ executable nmonad
   build-depends:
       base >=4.7 && <5
     , containers >=0.6.7 && <1
-    , data-default >=0.7.1.1 && <1
-    , dbus >=1.0.1 && <2
-    , mtl >=2.2 && <3
+    , lens ==5.*
     , nmonad
     , text ==2.*
   default-language: Haskell2010
@@ -65,7 +68,7 @@ test-suite nmonad-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      NMonad.CoreSpec
+      NMonad.OperationsSpec
       Test.NMonad
       Paths_nmonad
   hs-source-dirs:
@@ -75,10 +78,8 @@ test-suite nmonad-test
       QuickCheck ==2.*
     , base >=4.7 && <5
     , containers >=0.6.7 && <1
-    , data-default >=0.7.1.1 && <1
-    , dbus >=1.0.1 && <2
     , hspec ==2.*
-    , mtl >=2.2 && <3
+    , lens ==5.*
     , nmonad
     , text ==2.*
   default-language: Haskell2010

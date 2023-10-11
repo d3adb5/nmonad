@@ -16,9 +16,7 @@ description:         Please see the README on GitHub at <https://github.com/d3ad
 dependencies:
 - base >= 4.7 && < 5
 - containers >= 0.6.7 && < 1
-- data-default >= 0.7.1.1 && < 1
-- dbus >= 1.0.1 && < 2
-- mtl >= 2.2 && < 3
+- lens == 5.*
 - text == 2.*
 
 ghc-options:
@@ -34,6 +32,12 @@ ghc-options:
 
 library:
   source-dirs: src
+  dependencies:
+  - data-default >= 0.7.1.1 && < 1
+  - dbus >= 1.0.1 && < 2
+  - extra == 1.*
+  - mtl >= 2.2 && < 3
+  - utility-ht >= 0.0.17
 
 executables:
   nmonad:
