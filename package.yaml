@@ -37,6 +37,7 @@ library:
   - dbus >= 1.0.1 && < 2
   - extra == 1.*
   - mtl >= 2.2 && < 3
+  - template-haskell == 2.*
   - utility-ht >= 0.0.17
 
 executables:
