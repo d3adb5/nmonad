@@ -134,7 +134,7 @@ fromTimeout n
 -- | Raw notification data received from DBus.
 --
 -- The desktop notifications specification can be found in the following URL:
---   https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html
+--   https://specifications.freedesktop.org/notification-spec/latest/
 --
 data DBusNotification = DBusNotification Text Word32 Text Text Text [Text] (Map Text Variant) Int32
   deriving (Show, Eq)
