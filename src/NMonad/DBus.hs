@@ -19,6 +19,7 @@ module NMonad.DBus
   ) where
 
 import Control.Concurrent
+import Control.Monad (when)
 import Data.Int (Int32)
 import Data.Map (Map)
 import Data.Text (Text, pack)

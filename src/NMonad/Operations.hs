@@ -24,6 +24,7 @@ module NMonad.Operations
 
 import Prelude hiding (lookup)
 
+import Control.Monad ((>=>))
 import Data.Bool.HT (if')
 import Data.Map (insert, lookup, adjust, delete)
 import Data.Word (Word32)

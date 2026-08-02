@@ -13,7 +13,8 @@
 module NMonad.Main (nmonad) where
 
 import Control.Concurrent
-import Control.Monad.Extra (whenJustM)
+import Control.Monad ((>=>))
+import Control.Monad.Extra (whenJustM, forever)
 import NMonad.Core
 import NMonad.DBus
 import NMonad.Operations
