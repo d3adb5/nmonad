@@ -1,4 +1,7 @@
-resolver: lts-21.13
+resolver: lts-24.52
 
 packages:
 - .
+
+extra-deps:
+  - testcontainers-0.5.4.0

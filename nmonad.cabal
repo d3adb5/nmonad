@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.2.
+-- This file has been generated from package.yaml by hpack version 0.38.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -19,6 +19,11 @@ license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
+data-files:
+    dbus-daemon/dbus.conf
+    dbus-daemon/Dockerfile
+    dbus-daemon/entrypoint.sh
+data-dir:       resources
 
 source-repository head
   type: git
@@ -69,18 +74,24 @@ test-suite nmonad-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      NMonad.DBusSpec
       NMonad.OperationsSpec
       Test.NMonad
       Paths_nmonad
   hs-source-dirs:
       test
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -Wno-orphans -Wno-missing-export-lists
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -Wno-orphans -Wno-missing-export-lists -Wno-x-partial
   build-depends:
       QuickCheck ==2.*
     , base >=4.7 && <5
     , containers >=0.6.7 && <1
+    , dbus
     , hspec ==2.*
     , lens ==5.*
     , nmonad
+    , silently ==1.*
+    , temporary
+    , testcontainers >=0.5.4.0
     , text ==2.*
+    , unix
   default-language: Haskell2010

@@ -30,6 +30,9 @@ ghc-options:
 - -Wpartial-fields
 - -Wredundant-constraints
 
+data-dir: resources
+data-files: dbus-daemon/*
+
 library:
   source-dirs: src
   dependencies:
@@ -61,7 +64,13 @@ tests:
     - -with-rtsopts=-N
     - -Wno-orphans
     - -Wno-missing-export-lists
+    - -Wno-x-partial
     dependencies:
     - QuickCheck == 2.*
+    - dbus
     - hspec == 2.*
     - nmonad
+    - silently == 1.*
+    - temporary
+    - testcontainers >= 0.5.4.0
+    - unix
