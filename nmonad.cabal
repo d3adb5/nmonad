@@ -80,16 +80,17 @@ test-suite nmonad-test
       Paths_nmonad
   hs-source-dirs:
       test
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -Wno-orphans -Wno-missing-export-lists
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -Wno-orphans -Wno-missing-export-lists -Wno-x-partial
   build-depends:
       QuickCheck ==2.*
     , base >=4.7 && <5
     , containers >=0.6.7 && <1
+    , dbus
     , hspec ==2.*
     , lens ==5.*
-    , main-tester
     , nmonad
     , silently ==1.*
+    , temporary
     , testcontainers >=0.5.4.0
     , text ==2.*
     , unix

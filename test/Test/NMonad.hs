@@ -28,6 +28,7 @@ instance Arbitrary NConfig where
     let disableReplacement = False
         dbusNotificationHook = return . Just
         notificationHook = return . Just
+        dbusRequestNameFlags = []
     return NConfig {..}
 
 instance Arbitrary NState where

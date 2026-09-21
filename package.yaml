@@ -64,11 +64,13 @@ tests:
     - -with-rtsopts=-N
     - -Wno-orphans
     - -Wno-missing-export-lists
+    - -Wno-x-partial
     dependencies:
     - QuickCheck == 2.*
+    - dbus
     - hspec == 2.*
-    - main-tester
     - nmonad
     - silently == 1.*
+    - temporary
     - testcontainers >= 0.5.4.0
     - unix
