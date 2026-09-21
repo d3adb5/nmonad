@@ -67,5 +67,8 @@ tests:
     dependencies:
     - QuickCheck == 2.*
     - hspec == 2.*
+    - main-tester
     - nmonad
+    - silently == 1.*
     - testcontainers >= 0.5.4.0
+    - unix
