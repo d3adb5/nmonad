@@ -6,8 +6,9 @@ import Paths_nmonad (getDataFileName)
 
 import Control.Concurrent (newEmptyMVar)
 import Control.Monad.IO.Class
-import Data.Text (Text, pack, unpack)
+import Data.Text (Text, pack, unpack, isPrefixOf)
 import Data.Text.Lazy (isInfixOf)
+import System.IO.Error (ioeGetErrorString)
 import System.IO.Silently (silence)
 import System.Posix.User (getEffectiveUserID, getEffectiveGroupID)
 import Test.Hspec
@@ -39,9 +40,12 @@ containers = do
 
 spec :: Spec
 spec = around (withMockDbusAddr . withContainers containers) $ do
-  describe "listenForNotifications :: MVar (DBusNotification, MVar Word32) -> IO ()" $ do
+  describe "listenForNotifications :: [RequestNameFlag] -> MVar (DBusNotification, MVar Word32) -> IO ()" $ do
     it "connects to the containerized daemon and claims the notifications name" $  do
       mailbox <- newEmptyMVar
-      silence $ listenForNotifications mailbox
+      silence $ listenForNotifications [] mailbox
     it "raises a failure when unable to own org.freedesktop.Notifications" $ do
-      pending
+      mailbox <- newEmptyMVar
+      silence $ listenForNotifications [] mailbox
+      let failureStart = "Failed to become primary owner of org.freedesktop.Notifications:"
+      silence (listenForNotifications [] mailbox) `shouldThrow` ((isPrefixOf failureStart) . pack . ioeGetErrorString)

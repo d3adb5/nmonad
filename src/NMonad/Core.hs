@@ -50,6 +50,7 @@ module NMonad.Core
   , disableReplacement
   , dbusNotificationHook
   , notificationHook
+  , dbusRequestNameFlags
 
   -- NEnv
   , globalMailbox
@@ -76,6 +77,7 @@ import Data.Map (Map)
 import Data.Text (Text)
 import Data.Word
 import DBus (Variant)
+import DBus.Client (RequestNameFlag, nameReplaceExisting, nameAllowReplacement)
 
 import NMonad.Internal.TH
 
@@ -103,6 +105,9 @@ data NConfig = NConfig
     -- ^ Process a notification as soon as it is received from DBus, optionally discarding it.
   , notificationHook :: Notification -> N (Maybe Notification)
     -- ^ Process a notification after it is processed by nmonad, optionally discarding it.
+
+  , dbusRequestNameFlags :: [RequestNameFlag]
+    -- ^ Flags to pass to DBus when requesting @org.freedesktop.Notifications@.
   }
 
 instance Default NConfig where
@@ -111,6 +116,7 @@ instance Default NConfig where
     , disableReplacement = False
     , dbusNotificationHook = return . Just
     , notificationHook = return . Just
+    , dbusRequestNameFlags = [nameAllowReplacement, nameReplaceExisting]
     }
 
 -- | The mutable state of the daemon.

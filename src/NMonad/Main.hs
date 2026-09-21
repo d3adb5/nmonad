@@ -22,7 +22,7 @@ import NMonad.Operations
 nmonad :: NConfig -> IO ()
 nmonad cfg = do
   syncVar <- newEmptyMVar
-  listenForNotifications syncVar
+  listenForNotifications (cfg ^. dbusRequestNameFlags) syncVar
   _ <- runN (NEnv syncVar cfg) def mainLoop
   return ()
 

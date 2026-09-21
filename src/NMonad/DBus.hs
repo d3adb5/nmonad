@@ -16,6 +16,7 @@
 
 module NMonad.DBus
   ( listenForNotifications
+  , listenForNotificationsWith
   ) where
 
 import Control.Concurrent
@@ -65,24 +66,14 @@ serverInformation = return ("NMonad", "NMonad", pack $ showVersion version, "1.2
 capabilities :: IO [Text]
 capabilities = return ["body", "body-markup", "icon-static"]
 
--- | Connect to DBus, request the org.freedesktop.Notifications name and export the appropriate interface at
--- /org/freedesktop/Notifications.
---
--- Requires an 'MVar' to for synchronization with the main thread. The 'MVar' is used to pass the notification data
--- received from DBus to the main thread, as well as a reference to a new 'MVar' that will be populated with the
--- 'Word32' representing the ID of the sent notification. Refer to the Desktop Notifications Specification for more
--- information.
---
--- This action starts a new thread due to calling 'connectSession', and so it doesn't block the thread that
--- invoked it.
---
-listenForNotifications :: MVar (DBusNotification, MVar Word32) -> IO ()
-listenForNotifications syncVar = do
-  putStrLn "Connecting to DBus to create client..."
-  client <- connectSession
+-- | Generic case of `listenForNotifications`, accepting an action that yields a `Client`.
+listenForNotificationsWith :: IO Client -> [RequestNameFlag] -> MVar (DBusNotification, MVar Word32) -> IO ()
+listenForNotificationsWith getClient requestFlags syncVar = do
+  putStrLn "Obtaining DBus client..."
+  client <- getClient
 
   putStrLn "Requesting the org.freedesktop.Notifications name..."
-  reply <- requestName client "org.freedesktop.Notifications" [nameAllowReplacement, nameReplaceExisting]
+  reply <- requestName client "org.freedesktop.Notifications" requestFlags
   putStrLn $ "Reply: " ++ show reply
   when (reply /= NamePrimaryOwner) $
     fail ("Failed to become primary owner of org.freedesktop.Notifications: " ++ show reply)
@@ -95,3 +86,19 @@ listenForNotifications syncVar = do
       , autoMethod "Notify" (withDBusNotification $ receiveNotification syncVar)
       ]
     }
+
+-- | Connect to DBus, request the @org.freedesktop.Notifications@ name and export the appropriate interface at
+-- @\/org\/freedesktop\/Notifications@.
+--
+-- Requires a list of `RequestNameFlag` to pass to DBus when requesting the name.
+--
+-- Requires an 'MVar' to for synchronization with the main thread. The 'MVar' is used to pass the notification data
+-- received from DBus to the main thread, as well as a reference to a new 'MVar' that will be populated with the
+-- 'Word32' representing the ID of the sent notification. Refer to the Desktop Notifications Specification for more
+-- information.
+--
+-- This action starts a new thread due to calling 'connectSession', and so it doesn't block the thread that
+-- invoked it.
+--
+listenForNotifications :: [RequestNameFlag] -> MVar (DBusNotification, MVar Word32) -> IO ()
+listenForNotifications = listenForNotificationsWith connectSession
